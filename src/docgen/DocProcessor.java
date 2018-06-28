@@ -11,6 +11,12 @@ public class DocProcessor {
             int errorsCount = 0;
             System.out.println("Analyzing \'" + clazz.getSimpleName() + "\'...");
 
+            Doc classdoc = (Doc) clazz.getDeclaredAnnotation(Doc.class);
+            if (classdoc.desc().isEmpty()) {
+                System.out.println("\n\t=> Documentation for Class Desc is missing.");
+                errorsCount++;
+            }
+
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
 
@@ -26,7 +32,6 @@ public class DocProcessor {
                     int errors = 0;
                     // check for the Doc annotation
                     if (method.isAnnotationPresent(Doc.class)) {
-                        errors = 0;
                         Doc doc = method.getAnnotation(Doc.class);
 
                         // method desc check
@@ -72,7 +77,7 @@ public class DocProcessor {
     }
 
     private static int getMissingParams(Method method, Doc doc) {
-        int missingParams = 0;
+        int missingParams;
         int annotatedParams = doc.params().length;
         int actualParams = method.getParameterCount();
         missingParams = actualParams - annotatedParams;
